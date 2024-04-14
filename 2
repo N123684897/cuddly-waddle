@@ -1,0 +1,59 @@
+from visual import*
+
+# 1. 參數設定和畫面準備
+
+G=6.673E-11
+
+mass = {'earth': 5.97E24, 'mars':6.42E23} # 以 dictionary 存放地球、火星的質量
+
+d_at_perihelion = {'earth': 1.495E11, 'mars':2.279E11} # 近日點時，地球或火星到太陽的距離
+
+v_at_perihelion = {'earth': 2.9783E4, 'mars':2.4077E4} # 在近日點時，地球或火星的移動速度
+
+scene = display(width=1000, height=1000, background=(0,0,0))
+
+sun = sphere(pos=vector(0,0,0), radius = 2.1E10, color = color.orange, material = materials.emissive)
+
+scene.lights = [local_light(pos=(0,0,0), color=color.white)]
+
+# 2. 行星物件產生類別
+
+class planet_c(sphere):
+
+ m_sun = 1.99E30 # 太陽質量
+
+ def a(self):
+
+ return - norm(self.pos) * G * self.m_sun / mag2(self.pos) 
+
+# 3. 產生地球和火星
+
+earth = planet_c(pos = vector(d_at_perihelion['earth'],0,0),radius = 9.5E9,
+
+ material = materials.earth, make_trail = True, retain = 365 *24)
+
+earth.rotate(angle = pi/2, axis=(1, 0, 0))
+
+earth.m, earth.v = mass['earth'], vector(0, v_at_perihelion['earth'], 0)
+
+mars = planet_c(pos = vector(d_at_perihelion['mars'],0,0), radius = 4.9E9,
+
+ material= materials.bricks, make_trail = True, retain = 700 * 24)
+
+mars.m, mars.v = mass['mars'], vector(0, v_at_perihelion['mars'], 0)
+
+planets = [earth, mars]
+
+# 4. 運動部分
+
+dt= 60*60
+
+while True:
+
+ rate(6*24)
+
+ for planet in planets:
+
+ planet.v += planet.a()* dt
+
+ planet.pos += planet.v * dt
