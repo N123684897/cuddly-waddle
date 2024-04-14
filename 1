@@ -1,0 +1,842 @@
+ 藝廊
+Scratch創意秀
+ 
+VPhysics創意秀
+ 
+ 推薦
+人工智慧時代正式來臨
+T觀點 20170226 (1/4)
+ 
+T觀點 20170226 (2/4)
+ 
+T觀點 20170226 (3/4)
+ 
+T觀點 20170226 (4/4)
+ 
+怎麼樣成為一個高手
+ 
+成功的要訣：恆毅力
+ 
+先別急著吃棉花糖
+ 
+程式、跨領域、終身學習
+ 
+參考書
+ 
+作者
+講義
+
+Lecture 5 萬有引力定律與克卜勒行星運動定律
+建國高中特色選修課程 - 物理現象的程式設計與模擬
+作者：賴奕帆
+日期：2018/8/01
+
+一、萬有引力定律
+定律內容：牛頓於1687年提出 「任何兩個質點之間必有一吸引力F，其量值和兩質量的乘積成正比，和它們之間的距離平方成反比，其方向在連心線上。」
+
+
+
+
+F→=GMmr2rˆ
+r：將兩球體視為質點時的兩球心距離，單位為公尺（m）。
+M、m：兩質點的質量單位為公斤（kg）。
+G：萬有引力常數為6.67×10−11 N⋅m2/kg2
+這堂課我們要將前三堂課所學的基本程式概念應用於行星運動。
+讓我們先來寫一物體受到地球萬有引力作用，改變運動狀態與位置的Vpython程式。
+請參考以下範例程式：
+
+Example 1 : 衛星受地球萬有引力吸引落下
+"""
+    建國中學 Vpython物理模擬
+    作者: 物理科 賴奕帆老師
+    特色課程 Lecture 05 萬有引力定律與克卜勒行星運動定律
+    5_01_Gravity force.py
+"""
+from vpython import *  #引用視覺畫套件Vpython
+"""
+    1. 參數設定，設定變數及定義萬有引力公式
+"""
+G = 6.67*10**(-11) ; M = 6*10**24 ; m = 1000  
+Re = 6.4*10**6 ; H = 20*Re ; t = 0 ; dt = 1
+def Fg(x):                                 #定義公式
+    return -G*M*m/(x**2)
+
+"""
+    2. 畫面設定
+"""
+scene = canvas(align = 'left',title ='4_01_Gravity force',  width=800, height=300, center=vec(0,0,0), background=vec(0.6,0.8,0.8)) #設定視窗
+earth = sphere(pos=vec(0,0,0), radius=Re, texture=textures.earth) #放置物件地球
+mater = sphere(pos=vec(H,0,0), radius=0.1*Re,color=color.red, make_trail=True) #放置物件衛星
+materv = vec(0,0,0) #衛星速率=0
+"""
+    3. 執行迴圈
+"""
+while mater.pos.x-earth.pos.x >=Re:  #執行迴圈
+    rate(5000)
+    dist = ((mater.pos.x-earth.pos.x)**2+(mater.pos.y-earth.pos.y)**2+(mater.pos.z-earth.pos.z)**2)**0.5 #距離純量
+    radiavector = (mater.pos-earth.pos)/dist #距離單位向量
+    Fg_vector = Fg(dist)*radiavector # 萬有引力向量=萬有引力量值*單位向量
+    
+    materv += Fg_vector/m*dt   #Δv = F/m *dt
+    mater.pos = mater.pos + materv*dt  # S = S0 + v *dt
+  
+    t = t+dt
+"""
+    4.當衛星碰觸地球表面，則衛星停止不動
+"""
+while True:  
+    rate(1000)
+    materv = vector(0,0,0)
+    mater.pos = mater.pos
+
+
+可見到一個紅色衛星緩緩受到地球引力吸引而掉落，但光看此動畫難以判斷是否正確，如何確認呢？讓我們加入圖表判觀察吧。
+加入圖表觀察萬有引力
+""" Fg_x圖(2. 畫面設定)"""
+gd = graph(align='left',width=400,height=400,  #設定X-t繪圖視窗
+              title='Fg', xtitle='R', ytitle='Fg(red)',
+              foreground=color.black,background=color.white,
+              xmax=20, xmin=-2, ymax=1.2, ymin=0)
+f1 = gcurve(color=color.red)  #定義曲線
+Fe = G*M*m/Re**2 #定義地球表面重力強度
+
+
+Vpython的圖表可以即時觀察物件的各種狀態，包含受力、位置、速度、加速度、能量與時間等等，是一個方便有感覺的圖表工具。
+二、克卜勒行星第一定律 (一) 圓形軌道衛星
+討論「衛星質量m以軌道半徑r繞質量M的行星作等速率圓周運動」。
+
+
+m繞M轉所需的向心力來自m在該軌道上所受的萬有引力。
+因萬有引力恆指向M球心，所以其軌道平面通過球心。
+m以萬有引力作為向心力作圓周運動：
+
+
+F=GMmr2=mac=mv2r=m4π2rT2
+
+移項整理後可得：
+v=GMr−−−−√
+和
+T=2πrGM−−−−√
+衛星m的速率 : v與衛星的質量m無關。
+衛星m的週期 : T與衛星的質量m也無關。
+在程式碼中加入衛星速度，觀察衛星運動
+""" 加入圓周運動的衛星速度(1. 參數設定)"""
+   H = 5*Re #更改衛星位置 
+   V0 = _____________ #定義衛星初速度
+   materv = vector(0,_______,0) #改變衛星初速度
+   while True:  #原本是while mater.x-earth.x >=Re:
+
+
+將公式中的速率置入程式內，執行出來果然是漂亮的正圓形，不過旁邊的圖表暫時沒用，可以先用Alt+3將程式碼刪除。
+三、克卜勒行星第一定律 (二) 橢圓軌道衛星
+又稱軌道定律，內容：『所有的行星各以太陽為焦點的橢圓形軌道上運行。』
+
+橢圓的標準畫法：
+
+把一條線的兩端F1和F2固定，用筆尖貼線拉緊，則筆尖所描繪出的軌跡即為一橢圓。兩固定點稱為焦點。從橢圓上任何一點P，到兩焦點的距離之和，即「PF1¯¯¯¯¯¯¯¯¯+PF2¯¯¯¯¯¯¯¯¯」，為一定值。
+
+方程式：x2a2+y2b2=1 ，a= 半長軸、b= 半短軸，其中 a2=b2+c2
+，橢圓面積 = πab ； (圓面積 = πr2)
+
+偏心率e：e=ca<1，決定橢圓的扁平程度，偏心率愈大，軌道愈扁平。
+近日點 rmin=a+c=a(1+e) ，遠日點 rmax=a−c=a(1−e)。
+
+如何把上節的正圓形軌道改成橢圓形軌道呢？
+
+
+
+將Vpython中的正圓形軌道改成橢圓形軌道
+   materv = vector(0,0.7*V0,0) #使衛星改為橢圓軌道運動
+
+
+看起來很像橢圓形，但這軌跡真的遵守橢圓形方程式嗎？
+讓我們找衛星運動軌跡的上下左右四個端點，以利得到橢圓形軌跡的半長軸a與半短軸b。
+利用Lecture 2「三點記錄法」找橢圓四個端點
+   """ 定義衛星前瞬間位置的名稱 (1. 參數設定)"""
+   pre_mater_pos = vector(0,0,0)
+   """ 在迴圈中記憶衛星前瞬間與前前瞬間的位置 (3. 執行迴圈，最前面)"""
+   pre_pre_mater_pos = pre_mater_pos
+   pre_mater_pos = vector(mater.pos.x , mater.pos.y, mater.pos.z)
+   """ 找出衛星上下左右四個端點位置 (3.執行迴圈，最後面)"""
+   if pre_mater_pos.x > pre_pre_mater_pos.x and pre_mater_pos.x > mater.pos.x :
+      print (mater.pos) #印出右端點
+   if pre_mater_pos.x < pre_pre_mater_pos.x and pre_mater_pos.x < mater.pos.x : 
+      print (mater.pos) #印出左端點
+   if ______________ and ______________  :
+      print (mater.pos) #印出上端點
+   if ______________ and ______________ :
+      print (mater.pos) #印出下端點 藝廊
+Scratch創意秀
+ 
+VPhysics創意秀
+ 
+ 推薦
+人工智慧時代正式來臨
+T觀點 20170226 (1/4)
+ 
+T觀點 20170226 (2/4)
+ 
+T觀點 20170226 (3/4)
+ 
+T觀點 20170226 (4/4)
+ 
+怎麼樣成為一個高手
+ 
+成功的要訣：恆毅力
+ 
+先別急著吃棉花糖
+ 
+程式、跨領域、終身學習
+ 
+參考書
+ 
+作者
+講義
+
+Lecture 5 萬有引力定律與克卜勒行星運動定律
+建國高中特色選修課程 - 物理現象的程式設計與模擬
+作者：賴奕帆
+日期：2018/8/01
+
+一、萬有引力定律
+定律內容：牛頓於1687年提出 「任何兩個質點之間必有一吸引力F，其量值和兩質量的乘積成正比，和它們之間的距離平方成反比，其方向在連心線上。」
+
+
+
+
+F→=GMmr2rˆ
+r：將兩球體視為質點時的兩球心距離，單位為公尺（m）。
+M、m：兩質點的質量單位為公斤（kg）。
+G：萬有引力常數為6.67×10−11 N⋅m2/kg2
+這堂課我們要將前三堂課所學的基本程式概念應用於行星運動。
+讓我們先來寫一物體受到地球萬有引力作用，改變運動狀態與位置的Vpython程式。
+請參考以下範例程式：
+
+Example 1 : 衛星受地球萬有引力吸引落下
+"""
+    建國中學 Vpython物理模擬
+    作者: 物理科 賴奕帆老師
+    特色課程 Lecture 05 萬有引力定律與克卜勒行星運動定律
+    5_01_Gravity force.py
+"""
+from vpython import *  #引用視覺畫套件Vpython
+"""
+    1. 參數設定，設定變數及定義萬有引力公式
+"""
+G = 6.67*10**(-11) ; M = 6*10**24 ; m = 1000  
+Re = 6.4*10**6 ; H = 20*Re ; t = 0 ; dt = 1
+def Fg(x):                                 #定義公式
+    return -G*M*m/(x**2)
+
+"""
+    2. 畫面設定
+"""
+scene = canvas(align = 'left',title ='4_01_Gravity force',  width=800, height=300, center=vec(0,0,0), background=vec(0.6,0.8,0.8)) #設定視窗
+earth = sphere(pos=vec(0,0,0), radius=Re, texture=textures.earth) #放置物件地球
+mater = sphere(pos=vec(H,0,0), radius=0.1*Re,color=color.red, make_trail=True) #放置物件衛星
+materv = vec(0,0,0) #衛星速率=0
+"""
+    3. 執行迴圈
+"""
+while mater.pos.x-earth.pos.x >=Re:  #執行迴圈
+    rate(5000)
+    dist = ((mater.pos.x-earth.pos.x)**2+(mater.pos.y-earth.pos.y)**2+(mater.pos.z-earth.pos.z)**2)**0.5 #距離純量
+    radiavector = (mater.pos-earth.pos)/dist #距離單位向量
+    Fg_vector = Fg(dist)*radiavector # 萬有引力向量=萬有引力量值*單位向量
+    
+    materv += Fg_vector/m*dt   #Δv = F/m *dt
+    mater.pos = mater.pos + materv*dt  # S = S0 + v *dt
+  
+    t = t+dt
+"""
+    4.當衛星碰觸地球表面，則衛星停止不動
+"""
+while True:  
+    rate(1000)
+    materv = vector(0,0,0)
+    mater.pos = mater.pos
+
+
+可見到一個紅色衛星緩緩受到地球引力吸引而掉落，但光看此動畫難以判斷是否正確，如何確認呢？讓我們加入圖表判觀察吧。
+加入圖表觀察萬有引力
+""" Fg_x圖(2. 畫面設定)"""
+gd = graph(align='left',width=400,height=400,  #設定X-t繪圖視窗
+              title='Fg', xtitle='R', ytitle='Fg(red)',
+              foreground=color.black,background=color.white,
+              xmax=20, xmin=-2, ymax=1.2, ymin=0)
+f1 = gcurve(color=color.red)  #定義曲線
+Fe = G*M*m/Re**2 #定義地球表面重力強度
+
+
+Vpython的圖表可以即時觀察物件的各種狀態，包含受力、位置、速度、加速度、能量與時間等等，是一個方便有感覺的圖表工具。
+二、克卜勒行星第一定律 (一) 圓形軌道衛星
+討論「衛星質量m以軌道半徑r繞質量M的行星作等速率圓周運動」。
+
+
+m繞M轉所需的向心力來自m在該軌道上所受的萬有引力。
+因萬有引力恆指向M球心，所以其軌道平面通過球心。
+m以萬有引力作為向心力作圓周運動：
+
+
+F=GMmr2=mac=mv2r=m4π2rT2
+
+移項整理後可得：
+v=GMr−−−−√
+和
+T=2πrGM−−−−√
+衛星m的速率 : v與衛星的質量m無關。
+衛星m的週期 : T與衛星的質量m也無關。
+在程式碼中加入衛星速度，觀察衛星運動
+""" 加入圓周運動的衛星速度(1. 參數設定)"""
+   H = 5*Re #更改衛星位置 
+   V0 = _____________ #定義衛星初速度
+   materv = vector(0,_______,0) #改變衛星初速度
+   while True:  #原本是while mater.x-earth.x >=Re:
+
+
+將公式中的速率置入程式內，執行出來果然是漂亮的正圓形，不過旁邊的圖表暫時沒用，可以先用Alt+3將程式碼刪除。
+三、克卜勒行星第一定律 (二) 橢圓軌道衛星
+又稱軌道定律，內容：『所有的行星各以太陽為焦點的橢圓形軌道上運行。』
+
+橢圓的標準畫法：
+
+把一條線的兩端F1和F2固定，用筆尖貼線拉緊，則筆尖所描繪出的軌跡即為一橢圓。兩固定點稱為焦點。從橢圓上任何一點P，到兩焦點的距離之和，即「PF1¯¯¯¯¯¯¯¯¯+PF2¯¯¯¯¯¯¯¯¯」，為一定值。
+
+方程式：x2a2+y2b2=1 ，a= 半長軸、b= 半短軸，其中 a2=b2+c2
+，橢圓面積 = πab ； (圓面積 = πr2)
+
+偏心率e：e=ca<1，決定橢圓的扁平程度，偏心率愈大，軌道愈扁平。
+近日點 rmin=a+c=a(1+e) ，遠日點 rmax=a−c=a(1−e)。
+
+如何把上節的正圓形軌道改成橢圓形軌道呢？
+
+
+
+將Vpython中的正圓形軌道改成橢圓形軌道
+   materv = vector(0,0.7*V0,0) #使衛星改為橢圓軌道運動
+
+
+看起來很像橢圓形，但這軌跡真的遵守橢圓形方程式嗎？
+讓我們找衛星運動軌跡的上下左右四個端點，以利得到橢圓形軌跡的半長軸a與半短軸b。
+利用Lecture 2「三點記錄法」找橢圓四個端點
+   """ 定義衛星前瞬間位置的名稱 (1. 參數設定)"""
+   pre_mater_pos = vector(0,0,0)
+   """ 在迴圈中記憶衛星前瞬間與前前瞬間的位置 (3. 執行迴圈，最前面)"""
+   pre_pre_mater_pos = pre_mater_pos
+   pre_mater_pos = vector(mater.pos.x , mater.pos.y, mater.pos.z)
+   """ 找出衛星上下左右四個端點位置 (3.執行迴圈，最後面)"""
+   if pre_mater_pos.x > pre_pre_mater_pos.x and pre_mater_pos.x > mater.pos.x :
+      print (mater.pos) #印出右端點
+   if pre_mater_pos.x < pre_pre_mater_pos.x and pre_mater_pos.x < mater.pos.x : 
+      print (mater.pos) #印出左端點
+   if ______________ and ______________  :
+      print (mater.pos) #印出上端點
+   if ______________ and ______________ :
+      print (mater.pos) #印出下端點 藝廊
+Scratch創意秀
+ 
+VPhysics創意秀
+ 
+ 推薦
+人工智慧時代正式來臨
+T觀點 20170226 (1/4)
+ 
+T觀點 20170226 (2/4)
+ 
+T觀點 20170226 (3/4)
+ 
+T觀點 20170226 (4/4)
+ 
+怎麼樣成為一個高手
+ 
+成功的要訣：恆毅力
+ 
+先別急著吃棉花糖
+ 
+程式、跨領域、終身學習
+ 
+參考書
+ 
+作者
+講義
+
+Lecture 5 萬有引力定律與克卜勒行星運動定律
+建國高中特色選修課程 - 物理現象的程式設計與模擬
+作者：賴奕帆
+日期：2018/8/01
+
+一、萬有引力定律
+定律內容：牛頓於1687年提出 「任何兩個質點之間必有一吸引力F，其量值和兩質量的乘積成正比，和它們之間的距離平方成反比，其方向在連心線上。」
+
+
+
+
+F→=GMmr2rˆ
+r：將兩球體視為質點時的兩球心距離，單位為公尺（m）。
+M、m：兩質點的質量單位為公斤（kg）。
+G：萬有引力常數為6.67×10−11 N⋅m2/kg2
+這堂課我們要將前三堂課所學的基本程式概念應用於行星運動。
+讓我們先來寫一物體受到地球萬有引力作用，改變運動狀態與位置的Vpython程式。
+請參考以下範例程式：
+
+Example 1 : 衛星受地球萬有引力吸引落下
+"""
+    建國中學 Vpython物理模擬
+    作者: 物理科 賴奕帆老師
+    特色課程 Lecture 05 萬有引力定律與克卜勒行星運動定律
+    5_01_Gravity force.py
+"""
+from vpython import *  #引用視覺畫套件Vpython
+"""
+    1. 參數設定，設定變數及定義萬有引力公式
+"""
+G = 6.67*10**(-11) ; M = 6*10**24 ; m = 1000  
+Re = 6.4*10**6 ; H = 20*Re ; t = 0 ; dt = 1
+def Fg(x):                                 #定義公式
+    return -G*M*m/(x**2)
+
+"""
+    2. 畫面設定
+"""
+scene = canvas(align = 'left',title ='4_01_Gravity force',  width=800, height=300, center=vec(0,0,0), background=vec(0.6,0.8,0.8)) #設定視窗
+earth = sphere(pos=vec(0,0,0), radius=Re, texture=textures.earth) #放置物件地球
+mater = sphere(pos=vec(H,0,0), radius=0.1*Re,color=color.red, make_trail=True) #放置物件衛星
+materv = vec(0,0,0) #衛星速率=0
+"""
+    3. 執行迴圈
+"""
+while mater.pos.x-earth.pos.x >=Re:  #執行迴圈
+    rate(5000)
+    dist = ((mater.pos.x-earth.pos.x)**2+(mater.pos.y-earth.pos.y)**2+(mater.pos.z-earth.pos.z)**2)**0.5 #距離純量
+    radiavector = (mater.pos-earth.pos)/dist #距離單位向量
+    Fg_vector = Fg(dist)*radiavector # 萬有引力向量=萬有引力量值*單位向量
+    
+    materv += Fg_vector/m*dt   #Δv = F/m *dt
+    mater.pos = mater.pos + materv*dt  # S = S0 + v *dt
+  
+    t = t+dt
+"""
+    4.當衛星碰觸地球表面，則衛星停止不動
+"""
+while True:  
+    rate(1000)
+    materv = vector(0,0,0)
+    mater.pos = mater.pos
+
+
+可見到一個紅色衛星緩緩受到地球引力吸引而掉落，但光看此動畫難以判斷是否正確，如何確認呢？讓我們加入圖表判觀察吧。
+加入圖表觀察萬有引力
+""" Fg_x圖(2. 畫面設定)"""
+gd = graph(align='left',width=400,height=400,  #設定X-t繪圖視窗
+              title='Fg', xtitle='R', ytitle='Fg(red)',
+              foreground=color.black,background=color.white,
+              xmax=20, xmin=-2, ymax=1.2, ymin=0)
+f1 = gcurve(color=color.red)  #定義曲線
+Fe = G*M*m/Re**2 #定義地球表面重力強度
+
+
+Vpython的圖表可以即時觀察物件的各種狀態，包含受力、位置、速度、加速度、能量與時間等等，是一個方便有感覺的圖表工具。
+二、克卜勒行星第一定律 (一) 圓形軌道衛星
+討論「衛星質量m以軌道半徑r繞質量M的行星作等速率圓周運動」。
+
+
+m繞M轉所需的向心力來自m在該軌道上所受的萬有引力。
+因萬有引力恆指向M球心，所以其軌道平面通過球心。
+m以萬有引力作為向心力作圓周運動：
+
+
+F=GMmr2=mac=mv2r=m4π2rT2
+
+移項整理後可得：
+v=GMr−−−−√
+和
+T=2πrGM−−−−√
+衛星m的速率 : v與衛星的質量m無關。
+衛星m的週期 : T與衛星的質量m也無關。
+在程式碼中加入衛星速度，觀察衛星運動
+""" 加入圓周運動的衛星速度(1. 參數設定)"""
+   H = 5*Re #更改衛星位置 
+   V0 = _____________ #定義衛星初速度
+   materv = vector(0,_______,0) #改變衛星初速度
+   while True:  #原本是while mater.x-earth.x >=Re:
+
+
+將公式中的速率置入程式內，執行出來果然是漂亮的正圓形，不過旁邊的圖表暫時沒用，可以先用Alt+3將程式碼刪除。
+三、克卜勒行星第一定律 (二) 橢圓軌道衛星
+又稱軌道定律，內容：『所有的行星各以太陽為焦點的橢圓形軌道上運行。』
+
+橢圓的標準畫法：
+
+把一條線的兩端F1和F2固定，用筆尖貼線拉緊，則筆尖所描繪出的軌跡即為一橢圓。兩固定點稱為焦點。從橢圓上任何一點P，到兩焦點的距離之和，即「PF1¯¯¯¯¯¯¯¯¯+PF2¯¯¯¯¯¯¯¯¯」，為一定值。
+
+方程式：x2a2+y2b2=1 ，a= 半長軸、b= 半短軸，其中 a2=b2+c2
+，橢圓面積 = πab ； (圓面積 = πr2)
+
+偏心率e：e=ca<1，決定橢圓的扁平程度，偏心率愈大，軌道愈扁平。
+近日點 rmin=a+c=a(1+e) ，遠日點 rmax=a−c=a(1−e)。
+
+如何把上節的正圓形軌道改成橢圓形軌道呢？
+
+
+
+將Vpython中的正圓形軌道改成橢圓形軌道
+   materv = vector(0,0.7*V0,0) #使衛星改為橢圓軌道運動
+
+
+看起來很像橢圓形，但這軌跡真的遵守橢圓形方程式嗎？
+讓我們找衛星運動軌跡的上下左右四個端點，以利得到橢圓形軌跡的半長軸a與半短軸b。
+利用Lecture 2「三點記錄法」找橢圓四個端點
+   """ 定義衛星前瞬間位置的名稱 (1. 參數設定)"""
+   pre_mater_pos = vector(0,0,0)
+   """ 在迴圈中記憶衛星前瞬間與前前瞬間的位置 (3. 執行迴圈，最前面)"""
+   pre_pre_mater_pos = pre_mater_pos
+   pre_mater_pos = vector(mater.pos.x , mater.pos.y, mater.pos.z)
+   """ 找出衛星上下左右四個端點位置 (3.執行迴圈，最後面)"""
+   if pre_mater_pos.x > pre_pre_mater_pos.x and pre_mater_pos.x > mater.pos.x :
+      print (mater.pos) #印出右端點
+   if pre_mater_pos.x < pre_pre_mater_pos.x and pre_mater_pos.x < mater.pos.x : 
+      print (mater.pos) #印出左端點
+   if ______________ and ______________  :
+      print (mater.pos) #印出上端點
+   if ______________ and ______________ :
+      print (mater.pos) #印出下端點 藝廊
+Scratch創意秀
+ 
+VPhysics創意秀
+ 
+ 推薦
+人工智慧時代正式來臨
+T觀點 20170226 (1/4)
+ 
+T觀點 20170226 (2/4)
+ 
+T觀點 20170226 (3/4)
+ 
+T觀點 20170226 (4/4)
+ 
+怎麼樣成為一個高手
+ 
+成功的要訣：恆毅力
+ 
+先別急著吃棉花糖
+ 
+程式、跨領域、終身學習
+ 
+參考書
+ 
+作者
+講義
+
+Lecture 5 萬有引力定律與克卜勒行星運動定律
+建國高中特色選修課程 - 物理現象的程式設計與模擬
+作者：賴奕帆
+日期：2018/8/01
+
+一、萬有引力定律
+定律內容：牛頓於1687年提出 「任何兩個質點之間必有一吸引力F，其量值和兩質量的乘積成正比，和它們之間的距離平方成反比，其方向在連心線上。」
+
+
+
+
+F→=GMmr2rˆ
+r：將兩球體視為質點時的兩球心距離，單位為公尺（m）。
+M、m：兩質點的質量單位為公斤（kg）。
+G：萬有引力常數為6.67×10−11 N⋅m2/kg2
+這堂課我們要將前三堂課所學的基本程式概念應用於行星運動。
+讓我們先來寫一物體受到地球萬有引力作用，改變運動狀態與位置的Vpython程式。
+請參考以下範例程式：
+
+Example 1 : 衛星受地球萬有引力吸引落下
+"""
+    建國中學 Vpython物理模擬
+    作者: 物理科 賴奕帆老師
+    特色課程 Lecture 05 萬有引力定律與克卜勒行星運動定律
+    5_01_Gravity force.py
+"""
+from vpython import *  #引用視覺畫套件Vpython
+"""
+    1. 參數設定，設定變數及定義萬有引力公式
+"""
+G = 6.67*10**(-11) ; M = 6*10**24 ; m = 1000  
+Re = 6.4*10**6 ; H = 20*Re ; t = 0 ; dt = 1
+def Fg(x):                                 #定義公式
+    return -G*M*m/(x**2)
+
+"""
+    2. 畫面設定
+"""
+scene = canvas(align = 'left',title ='4_01_Gravity force',  width=800, height=300, center=vec(0,0,0), background=vec(0.6,0.8,0.8)) #設定視窗
+earth = sphere(pos=vec(0,0,0), radius=Re, texture=textures.earth) #放置物件地球
+mater = sphere(pos=vec(H,0,0), radius=0.1*Re,color=color.red, make_trail=True) #放置物件衛星
+materv = vec(0,0,0) #衛星速率=0
+"""
+    3. 執行迴圈
+"""
+while mater.pos.x-earth.pos.x >=Re:  #執行迴圈
+    rate(5000)
+    dist = ((mater.pos.x-earth.pos.x)**2+(mater.pos.y-earth.pos.y)**2+(mater.pos.z-earth.pos.z)**2)**0.5 #距離純量
+    radiavector = (mater.pos-earth.pos)/dist #距離單位向量
+    Fg_vector = Fg(dist)*radiavector # 萬有引力向量=萬有引力量值*單位向量
+    
+    materv += Fg_vector/m*dt   #Δv = F/m *dt
+    mater.pos = mater.pos + materv*dt  # S = S0 + v *dt
+  
+    t = t+dt
+"""
+    4.當衛星碰觸地球表面，則衛星停止不動
+"""
+while True:  
+    rate(1000)
+    materv = vector(0,0,0)
+    mater.pos = mater.pos
+
+
+可見到一個紅色衛星緩緩受到地球引力吸引而掉落，但光看此動畫難以判斷是否正確，如何確認呢？讓我們加入圖表判觀察吧。
+加入圖表觀察萬有引力
+""" Fg_x圖(2. 畫面設定)"""
+gd = graph(align='left',width=400,height=400,  #設定X-t繪圖視窗
+              title='Fg', xtitle='R', ytitle='Fg(red)',
+              foreground=color.black,background=color.white,
+              xmax=20, xmin=-2, ymax=1.2, ymin=0)
+f1 = gcurve(color=color.red)  #定義曲線
+Fe = G*M*m/Re**2 #定義地球表面重力強度
+
+
+Vpython的圖表可以即時觀察物件的各種狀態，包含受力、位置、速度、加速度、能量與時間等等，是一個方便有感覺的圖表工具。
+二、克卜勒行星第一定律 (一) 圓形軌道衛星
+討論「衛星質量m以軌道半徑r繞質量M的行星作等速率圓周運動」。
+
+
+m繞M轉所需的向心力來自m在該軌道上所受的萬有引力。
+因萬有引力恆指向M球心，所以其軌道平面通過球心。
+m以萬有引力作為向心力作圓周運動：
+
+
+F=GMmr2=mac=mv2r=m4π2rT2
+
+移項整理後可得：
+v=GMr−−−−√
+和
+T=2πrGM−−−−√
+衛星m的速率 : v與衛星的質量m無關。
+衛星m的週期 : T與衛星的質量m也無關。
+在程式碼中加入衛星速度，觀察衛星運動
+""" 加入圓周運動的衛星速度(1. 參數設定)"""
+   H = 5*Re #更改衛星位置 
+   V0 = _____________ #定義衛星初速度
+   materv = vector(0,_______,0) #改變衛星初速度
+   while True:  #原本是while mater.x-earth.x >=Re:
+
+
+將公式中的速率置入程式內，執行出來果然是漂亮的正圓形，不過旁邊的圖表暫時沒用，可以先用Alt+3將程式碼刪除。
+三、克卜勒行星第一定律 (二) 橢圓軌道衛星
+又稱軌道定律，內容：『所有的行星各以太陽為焦點的橢圓形軌道上運行。』
+
+橢圓的標準畫法：
+
+把一條線的兩端F1和F2固定，用筆尖貼線拉緊，則筆尖所描繪出的軌跡即為一橢圓。兩固定點稱為焦點。從橢圓上任何一點P，到兩焦點的距離之和，即「PF1¯¯¯¯¯¯¯¯¯+PF2¯¯¯¯¯¯¯¯¯」，為一定值。
+
+方程式：x2a2+y2b2=1 ，a= 半長軸、b= 半短軸，其中 a2=b2+c2
+，橢圓面積 = πab ； (圓面積 = πr2)
+
+偏心率e：e=ca<1，決定橢圓的扁平程度，偏心率愈大，軌道愈扁平。
+近日點 rmin=a+c=a(1+e) ，遠日點 rmax=a−c=a(1−e)。
+
+如何把上節的正圓形軌道改成橢圓形軌道呢？
+
+
+
+將Vpython中的正圓形軌道改成橢圓形軌道
+   materv = vector(0,0.7*V0,0) #使衛星改為橢圓軌道運動
+
+
+看起來很像橢圓形，但這軌跡真的遵守橢圓形方程式嗎？
+讓我們找衛星運動軌跡的上下左右四個端點，以利得到橢圓形軌跡的半長軸a與半短軸b。
+利用Lecture 2「三點記錄法」找橢圓四個端點
+   """ 定義衛星前瞬間位置的名稱 (1. 參數設定)"""
+   pre_mater_pos = vector(0,0,0)
+   """ 在迴圈中記憶衛星前瞬間與前前瞬間的位置 (3. 執行迴圈，最前面)"""
+   pre_pre_mater_pos = pre_mater_pos
+   pre_mater_pos = vector(mater.pos.x , mater.pos.y, mater.pos.z)
+   """ 找出衛星上下左右四個端點位置 (3.執行迴圈，最後面)"""
+   if pre_mater_pos.x > pre_pre_mater_pos.x and pre_mater_pos.x > mater.pos.x :
+      print (mater.pos) #印出右端點
+   if pre_mater_pos.x < pre_pre_mater_pos.x and pre_mater_pos.x < mater.pos.x : 
+      print (mater.pos) #印出左端點
+   if ______________ and ______________  :
+      print (mater.pos) #印出上端點
+   if ______________ and ______________ :
+      print (mater.pos) #印出下端點 藝廊
+Scratch創意秀
+ 
+VPhysics創意秀
+ 
+ 推薦
+人工智慧時代正式來臨
+T觀點 20170226 (1/4)
+ 
+T觀點 20170226 (2/4)
+ 
+T觀點 20170226 (3/4)
+ 
+T觀點 20170226 (4/4)
+ 
+怎麼樣成為一個高手
+ 
+成功的要訣：恆毅力
+ 
+先別急著吃棉花糖
+ 
+程式、跨領域、終身學習
+ 
+參考書
+ 
+作者
+講義
+
+Lecture 5 萬有引力定律與克卜勒行星運動定律
+建國高中特色選修課程 - 物理現象的程式設計與模擬
+作者：賴奕帆
+日期：2018/8/01
+
+一、萬有引力定律
+定律內容：牛頓於1687年提出 「任何兩個質點之間必有一吸引力F，其量值和兩質量的乘積成正比，和它們之間的距離平方成反比，其方向在連心線上。」
+
+
+
+
+F→=GMmr2rˆ
+r：將兩球體視為質點時的兩球心距離，單位為公尺（m）。
+M、m：兩質點的質量單位為公斤（kg）。
+G：萬有引力常數為6.67×10−11 N⋅m2/kg2
+這堂課我們要將前三堂課所學的基本程式概念應用於行星運動。
+讓我們先來寫一物體受到地球萬有引力作用，改變運動狀態與位置的Vpython程式。
+請參考以下範例程式：
+
+Example 1 : 衛星受地球萬有引力吸引落下
+"""
+    建國中學 Vpython物理模擬
+    作者: 物理科 賴奕帆老師
+    特色課程 Lecture 05 萬有引力定律與克卜勒行星運動定律
+    5_01_Gravity force.py
+"""
+from vpython import *  #引用視覺畫套件Vpython
+"""
+    1. 參數設定，設定變數及定義萬有引力公式
+"""
+G = 6.67*10**(-11) ; M = 6*10**24 ; m = 1000  
+Re = 6.4*10**6 ; H = 20*Re ; t = 0 ; dt = 1
+def Fg(x):                                 #定義公式
+    return -G*M*m/(x**2)
+
+"""
+    2. 畫面設定
+"""
+scene = canvas(align = 'left',title ='4_01_Gravity force',  width=800, height=300, center=vec(0,0,0), background=vec(0.6,0.8,0.8)) #設定視窗
+earth = sphere(pos=vec(0,0,0), radius=Re, texture=textures.earth) #放置物件地球
+mater = sphere(pos=vec(H,0,0), radius=0.1*Re,color=color.red, make_trail=True) #放置物件衛星
+materv = vec(0,0,0) #衛星速率=0
+"""
+    3. 執行迴圈
+"""
+while mater.pos.x-earth.pos.x >=Re:  #執行迴圈
+    rate(5000)
+    dist = ((mater.pos.x-earth.pos.x)**2+(mater.pos.y-earth.pos.y)**2+(mater.pos.z-earth.pos.z)**2)**0.5 #距離純量
+    radiavector = (mater.pos-earth.pos)/dist #距離單位向量
+    Fg_vector = Fg(dist)*radiavector # 萬有引力向量=萬有引力量值*單位向量
+    
+    materv += Fg_vector/m*dt   #Δv = F/m *dt
+    mater.pos = mater.pos + materv*dt  # S = S0 + v *dt
+  
+    t = t+dt
+"""
+    4.當衛星碰觸地球表面，則衛星停止不動
+"""
+while True:  
+    rate(1000)
+    materv = vector(0,0,0)
+    mater.pos = mater.pos
+
+
+可見到一個紅色衛星緩緩受到地球引力吸引而掉落，但光看此動畫難以判斷是否正確，如何確認呢？讓我們加入圖表判觀察吧。
+加入圖表觀察萬有引力
+""" Fg_x圖(2. 畫面設定)"""
+gd = graph(align='left',width=400,height=400,  #設定X-t繪圖視窗
+              title='Fg', xtitle='R', ytitle='Fg(red)',
+              foreground=color.black,background=color.white,
+              xmax=20, xmin=-2, ymax=1.2, ymin=0)
+f1 = gcurve(color=color.red)  #定義曲線
+Fe = G*M*m/Re**2 #定義地球表面重力強度
+
+
+Vpython的圖表可以即時觀察物件的各種狀態，包含受力、位置、速度、加速度、能量與時間等等，是一個方便有感覺的圖表工具。
+二、克卜勒行星第一定律 (一) 圓形軌道衛星
+討論「衛星質量m以軌道半徑r繞質量M的行星作等速率圓周運動」。
+
+
+m繞M轉所需的向心力來自m在該軌道上所受的萬有引力。
+因萬有引力恆指向M球心，所以其軌道平面通過球心。
+m以萬有引力作為向心力作圓周運動：
+
+
+F=GMmr2=mac=mv2r=m4π2rT2
+
+移項整理後可得：
+v=GMr−−−−√
+和
+T=2πrGM−−−−√
+衛星m的速率 : v與衛星的質量m無關。
+衛星m的週期 : T與衛星的質量m也無關。
+在程式碼中加入衛星速度，觀察衛星運動
+""" 加入圓周運動的衛星速度(1. 參數設定)"""
+   H = 5*Re #更改衛星位置 
+   V0 = _____________ #定義衛星初速度
+   materv = vector(0,_______,0) #改變衛星初速度
+   while True:  #原本是while mater.x-earth.x >=Re:
+
+
+將公式中的速率置入程式內，執行出來果然是漂亮的正圓形，不過旁邊的圖表暫時沒用，可以先用Alt+3將程式碼刪除。
+三、克卜勒行星第一定律 (二) 橢圓軌道衛星
+又稱軌道定律，內容：『所有的行星各以太陽為焦點的橢圓形軌道上運行。』
+
+橢圓的標準畫法：
+
+把一條線的兩端F1和F2固定，用筆尖貼線拉緊，則筆尖所描繪出的軌跡即為一橢圓。兩固定點稱為焦點。從橢圓上任何一點P，到兩焦點的距離之和，即「PF1¯¯¯¯¯¯¯¯¯+PF2¯¯¯¯¯¯¯¯¯」，為一定值。
+
+方程式：x2a2+y2b2=1 ，a= 半長軸、b= 半短軸，其中 a2=b2+c2
+，橢圓面積 = πab ； (圓面積 = πr2)
+
+偏心率e：e=ca<1，決定橢圓的扁平程度，偏心率愈大，軌道愈扁平。
+近日點 rmin=a+c=a(1+e) ，遠日點 rmax=a−c=a(1−e)。
+
+如何把上節的正圓形軌道改成橢圓形軌道呢？
+
+
+
+將Vpython中的正圓形軌道改成橢圓形軌道
+   materv = vector(0,0.7*V0,0) #使衛星改為橢圓軌道運動
+
+
+看起來很像橢圓形，但這軌跡真的遵守橢圓形方程式嗎？
+讓我們找衛星運動軌跡的上下左右四個端點，以利得到橢圓形軌跡的半長軸a與半短軸b。
+利用Lecture 2「三點記錄法」找橢圓四個端點
+   """ 定義衛星前瞬間位置的名稱 (1. 參數設定)"""
+   pre_mater_pos = vector(0,0,0)
+   """ 在迴圈中記憶衛星前瞬間與前前瞬間的位置 (3. 執行迴圈，最前面)"""
+   pre_pre_mater_pos = pre_mater_pos
+   pre_mater_pos = vector(mater.pos.x , mater.pos.y, mater.pos.z)
+   """ 找出衛星上下左右四個端點位置 (3.執行迴圈，最後面)"""
+   if pre_mater_pos.x > pre_pre_mater_pos.x and pre_mater_pos.x > mater.pos.x :
+      print (mater.pos) #印出右端點
+   if pre_mater_pos.x < pre_pre_mater_pos.x and pre_mater_pos.x < mater.pos.x : 
+      print (mater.pos) #印出左端點
+   if ______________ and ______________  :
+      print (mater.pos) #印出上端點
+      
+   if ______________ and ______________ :
+      print (mater.pos) #印出下端
+
+
+
+
+
